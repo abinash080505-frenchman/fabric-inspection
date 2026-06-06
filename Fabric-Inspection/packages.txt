@@ -1,3 +1,2 @@
-app.py
-best.pt
-requirements.txt
+libgl1
+libglib2.0-0
