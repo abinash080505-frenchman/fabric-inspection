@@ -5,11 +5,14 @@ import tempfile
 import os
 
 # Load the model you just trained
-model_path = "/content/runs/detect/train/weights/best.pt"
-if os.path.exists(model_path):
-    model = YOLO(model_path)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "best.pt")
+
+if os.path.exists(MODEL_PATH):
+    model = YOLO(MODEL_PATH)
 else:
-    st.error("Model file not found. Please check the path.")
+    st.error(f"Model not found: {MODEL_PATH}")
+    st.stop()
 
 st.title("🧵 AI Fabric Quality Inspection System")
 st.write("Upload a fabric image to detect defects.")
@@ -21,9 +24,16 @@ if uploaded_file is not None:
     st.image(image, caption="Uploaded Image", use_container_width=True)
 
     # Temporary save for YOLO
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
-        image.save(tmp.name)
-        results = model(tmp.name)
+image = image.convert("RGB")
+
+with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
+    image.save(tmp.name, format="JPEG")
+
+try:
+    results = model(tmp.name)
+except Exception as e:
+    st.error(f"Inference Error: {e}")
+    st.stop()
 
     # Show Result
     annotated_image = results[0].plot()
