@@ -78,6 +78,8 @@ MODEL_PATH = os.path.join(BASE_DIR, "best.pt")
 if not os.path.exists(MODEL_PATH):
     st.error(f"Model file not found: {MODEL_PATH}")
     st.stop()
+
+
 try:
 model = YOLO(MODEL_PATH)
 except Exception as e:
